@@ -1,0 +1,5 @@
+#!/bin/bash
+
+APPTYPE=$1
+
+ansible-playbook -vv -e "type=$APPTYPE" -e "app_varfile=vars/$APPTYPE.yml" ../conf/playbook-update.yml

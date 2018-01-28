@@ -1,0 +1,21 @@
+---
+- hosts: tag_Name_grainmill
+  become: true
+  become_method: sudo
+  remote_user: ubuntu    
+  gather_facts: false
+  vars_files:
+    - "{{ vault_file }}"
+  pre_tasks:
+    - raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - setup: #aka gather_facts
+  roles:      
+    - role: geerlingguy.java
+    - grainmill
+    - role: tersmitten.r
+      ansible_distribution_release: xenial
+      r_install_dev: true
+      r_packages:
+        - name: httr
+        - name: rjsteckel/grainmill
+          type: github

@@ -1,0 +1,19 @@
+- name: Install packages
+  become: yes
+  become_method: sudo
+  apt:
+    name: "{{ item }}"
+    update_cache: true
+    state: present
+  with_items:
+    - 'libcurl4-openssl-dev'
+    - 'libssl-dev'
+    - 'libssh2-1-dev'
+    - 'libxml2-dev'
+    - 'unzip'
+
+- name: Symlink java
+  file:
+    src: "/usr/lib/jvm/java-8-openjdk-amd64"
+    dest: "/usr/lib/jvm/default-java"
+    state: link

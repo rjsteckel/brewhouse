@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#Should be grainmill or boilkettle
+APPTYPE=boilkettle
+
+ansible-playbook -vvv -e "type=$APPTYPE" --extra-vars="app_varfile=vars/$APPTYPE.yml" \
+						 ../conf/playbook-provision.yml

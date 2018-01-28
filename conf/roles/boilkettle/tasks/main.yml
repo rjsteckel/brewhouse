@@ -1,0 +1,135 @@
+
+ - name: Install packages
+   become: yes
+   become_method: sudo
+   apt:
+     name: "{{ item }}"
+     update_cache: true
+     state: present
+   with_items:
+     - 'libcurl4-openssl-dev'
+     - 'libssl-dev'
+     - 'libssh2-1-dev'
+     - 'libxml2-dev'
+     - 'unzip'
+     - 'postgresql'
+     - 'libpq-dev'
+     - 'python-psycopg2'
+
+ - name: Symlink java
+   file:
+     src: "/usr/lib/jvm/java-8-openjdk-amd64"
+     dest: "/usr/lib/jvm/default-java"
+     state: link
+
+ - name: rstudio user account creation
+   user: 
+     name: "{{ rstudio_username }}"
+     password: "{{ rstudio_password }}"
+     group: users 
+     shell: /bin/bash
+     createhome: yes
+     
+ - name: Install packages
+   apt:
+     name: "{{ item }}"
+     update_cache: true
+     state: present
+   with_items:
+     - 'xvfb'
+     - 'x11vnc'
+
+ - name: Upload R env file
+   become: true
+   become_user: "{{ db_username }}"
+   template:
+     src: Renviron.j2
+     dest: "/home/{{ db_username }}/.Renviron"
+     mode: 0600
+
+ - name: Download IB gateway
+   get_url: 
+     url: https://download2.interactivebrokers.com/installers/ibgateway/latest-standalone/ibgateway-latest-standalone-linux-x64.sh
+     dest: /tmp
+     
+ - name: Install IB gateway
+   become: yes
+   become_method: sudo
+   shell: "chmod +x ibgateway-latest-standalone-linux-x64.sh; yes | sh ibgateway-latest-standalone-linux-x64.sh -c"
+   args:
+     chdir: /tmp
+       
+ - name: Download IB gateway controller
+   get_url:
+     url: https://github.com/ib-controller/ib-controller/releases/download/3.4.0/IBController-3.4.0.zip
+     dest: /tmp
+
+ - name: Install IB gateway controller
+   become: yes
+   become_method: sudo
+   shell: "unzip /tmp/IBController-3.4.0.zip -d /opt/IBController; cd /opt/IBController; chmod a+x ./*.sh ./*/*.sh"
+
+ - name: Make IB ini directory
+   file: path=/root/IBController state=directory
+
+ - name: Upload IB Controller files
+   copy:
+     src: "{{ item }}"
+     dest: /opt/IBController/
+   with_items:
+     - "IBControllerStart.sh"
+
+ - name: Upload IB Controller files
+   template:
+     src: IBController.ini.j2
+     dest: /root/IBController/IBController.ini
+     mode: 0600
+
+ - name: Upload service files
+   copy:
+     src: "{{ item }}"
+     dest: /lib/systemd/system/
+   with_items:
+     - "ibcontroller-paper.service"
+     - "vnc.service"
+     - "xvfb.service"
+
+ - name: restart XVFB service
+   systemd:
+     state: restarted
+     name: xvfb
+
+ - name: restart VNC service
+   systemd:
+     state: restarted
+     name: vnc
+         
+ - name: restart IB Controller service
+   systemd:
+     state: restarted
+     name: ibcontroller-paper
+
+ - name: Create postgres user
+   postgresql_user: name={{ dbuser }} password={{ dbpassword }}
+   become: true
+   become_user: postgres
+
+ - name: ensure database is created
+   become: true
+   become_user: postgres
+   postgresql_db: name={{dbname}}
+
+ - name: ensure user has access to database
+   become: true
+   become_user: postgres
+   postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+ - name: ensure user does not have unnecessary privilege
+   become: true
+   become_user: postgres 
+   postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+ - name: ensure no other user can access the database
+   become: true
+   become_user: postgres
+   postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent

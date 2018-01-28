@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - "{{ vault_file }}"      
+    - "{{ app_varfile }}"
+  tasks:
+    - debug: var=groups['all']
+  roles:
+    - provision_ec2

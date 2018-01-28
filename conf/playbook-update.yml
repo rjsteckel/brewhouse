@@ -1,0 +1,11 @@
+---
+- hosts: tag_Name_boilkettle
+  become: true
+  remote_user: ubuntu    
+  gather_facts: false
+  roles:
+    - role: tersmitten.r    
+      ansible_distribution_release: xenial
+      r_packages:
+        - name: rjsteckel/boilkettle
+          type: github

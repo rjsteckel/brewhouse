@@ -1,0 +1,35 @@
+---
+- hosts: tag_Type_boilkettle
+  become: true
+  become_method: sudo
+  remote_user: ubuntu    
+  gather_facts: false
+  vars_files:
+    - "{{ vaultfile }}"
+  pre_tasks:
+    - raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - setup: # aka gather_facts
+  roles:      
+    - role: geerlingguy.java
+    - role: boilkettle
+      dbname: boilkettle
+      dbuser: "{{ db_username }}"
+      dbpassword: "{{ db_password }}"
+    - grainmill
+    - role: tersmitten.r
+      ansible_distribution_release: xenial
+      r_install_dev: true
+      r_packages:
+        - name: IBrokers
+        - name: tidyquant
+        - name: RPostgreSQL
+        - name: DBI
+        - name: dbplyr                
+        - name: rjsteckel/boilkettle
+          type: github
+        - name: rjsteckel/grainmill
+          type: github
+    - tersmitten.rstudio-server    
+
+
+

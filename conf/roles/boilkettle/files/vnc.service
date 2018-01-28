@@ -1,0 +1,12 @@
+[Unit]
+Description=Job that runs the VNC server to allow remote access to an existing X session
+Requires=xvfb.service
+After=xvfb.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/x11vnc -ncache 10 -ncache_cr -display :0 -forever -shared -logappend /var/log/x11vnc.log -bg -noipv6 -localhost
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

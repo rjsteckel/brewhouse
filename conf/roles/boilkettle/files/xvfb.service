@@ -1,0 +1,10 @@
+[Unit]
+Description=Job that runs the Xvfb - Virtual Framebuffer 'fake' X server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/Xvfb :0 -ac -screen 0 1024x768x24
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
