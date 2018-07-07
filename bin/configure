@@ -3,7 +3,7 @@
 APPTYPE=boilkettle
 
 ansible-playbook -vvvv -e "type=$APPTYPE" \
-						--extra-vars="app_varfile=vars/$APPTYPE.yml" \
-						--extra-vars="vaultfile=vars/vault.yml" \
-						--vault-password-file ~/.ansible_vault_pass \
-					  	../conf/playbook-configure-$APPTYPE.yml
+			--extra-vars="app_varfile=vars/$APPTYPE.yml" \
+			--extra-vars="vaultfile=/Users/rsteckel/vault.yml" \
+		   	--vault-password-file ~/.ansible_vault_pass \
+			../conf/playbook-configure-$APPTYPE.yml

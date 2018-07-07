@@ -12,6 +12,7 @@
      - 'libssh2-1-dev'
      - 'libxml2-dev'
      - 'unzip'
+     - 'curl'
      - 'postgresql'
      - 'libpq-dev'
      - 'python-psycopg2'
@@ -22,13 +23,13 @@
      dest: "/usr/lib/jvm/default-java"
      state: link
 
- - name: rstudio user account creation
-   user: 
-     name: "{{ rstudio_username }}"
-     password: "{{ rstudio_password }}"
-     group: users 
-     shell: /bin/bash
-     createhome: yes
+ #- name: rstudio user account creation
+ #  user: 
+ #    name: "{{ rstudio_username }}"
+ #    password: "{{ rstudio_password }}"
+ #    group: users 
+ #    shell: /bin/bash
+ #    createhome: yes
      
  - name: Install packages
    apt:
@@ -39,13 +40,13 @@
      - 'xvfb'
      - 'x11vnc'
 
- - name: Upload R env file
-   become: true
-   become_user: "{{ db_username }}"
-   template:
-     src: Renviron.j2
-     dest: "/home/{{ db_username }}/.Renviron"
-     mode: 0600
+ #- name: Upload R env file
+ #  become: true
+ #  become_user: "{{ db_username }}"
+ #  template:
+ #    src: Renviron.j2
+ #    dest: "/home/{{ db_username }}/.Renviron"
+ #    mode: 0600
 
  - name: Download IB gateway
    get_url: 
