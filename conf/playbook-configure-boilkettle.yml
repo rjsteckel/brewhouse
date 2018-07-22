@@ -11,26 +11,13 @@
     - setup: # aka gather_facts
   roles:      
     - role: geerlingguy.java
-    - role: andrewrothstein.anaconda
+    #- role: andrewrothstein.anaconda
+      #anaconda_parent_dir: "/home/ubuntu"
     - role: boilkettle
       dbname: boilkettle
       dbuser: "{{ db_username }}"
       dbpassword: "{{ db_password }}"
-    #- grainmill
-    #- role: tersmitten.r
-      #ansible_distribution_release: xenial
-      #r_install_dev: true
-      #r_packages:
-      #  - name: IBrokers
-      #  - name: tidyquant
-      #  - name: RPostgreSQL
-      #  - name: DBI
-      #  - name: dbplyr                
-      #  - name: rjsteckel/boilkettle
-      #    type: github
-      #  - name: rjsteckel/grainmill
-      #    type: github
-    #- tersmitten.rstudio-server    
+
 
 
 

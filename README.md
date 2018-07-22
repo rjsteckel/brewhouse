@@ -28,7 +28,7 @@ ansible -vvv all -u ubuntu -m ping
 #ansible-galaxy install tersmitten.rstudio-server
 
 #Tunnel local vnc connection to remote host
-#ssh -i ~/.ssh/alphahops.pem -L 5900:127.0.0.1:5900 -N ubuntu@ec2-54-90-86-108.compute-1.amazonaws.com
+#ssh -i ~/.ssh/alphahops.pem -L 5900:127.0.0.1:5900 -N ubuntu@ec2-54-145-126-108.compute-1.amazonaws.com
 
 
 #IBController 

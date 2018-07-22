@@ -34,3 +34,8 @@ vignettes/*.pdf
 
 conf/vars/vault.yml
 
+venv/
+
+.idea/
+
+*.retry

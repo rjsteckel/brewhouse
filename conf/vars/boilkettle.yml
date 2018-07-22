@@ -1,7 +1,7 @@
 ec2_keypair: "alphahops"
 ec2_security_group: "sg-8a1b10ff"    
-#ec2_instance_type: "t2.medium"
-ec2_instance_type: "t2.micro"
+ec2_instance_type: "t2.medium"
+#ec2_instance_type: "t2.micro"
 ec2_image: "ami-aa2ea6d0"
 ec2_subnet_ids: ['subnet-143c433f','subnet-cb0082c7','subnet-5c21112b']
 ec2_region: "us-east-1"

@@ -23,14 +23,6 @@
      dest: "/usr/lib/jvm/default-java"
      state: link
 
- #- name: rstudio user account creation
- #  user: 
- #    name: "{{ rstudio_username }}"
- #    password: "{{ rstudio_password }}"
- #    group: users 
- #    shell: /bin/bash
- #    createhome: yes
-     
  - name: Install packages
    apt:
      name: "{{ item }}"
@@ -39,14 +31,6 @@
    with_items:
      - 'xvfb'
      - 'x11vnc'
-
- #- name: Upload R env file
- #  become: true
- #  become_user: "{{ db_username }}"
- #  template:
- #    src: Renviron.j2
- #    dest: "/home/{{ db_username }}/.Renviron"
- #    mode: 0600
 
  - name: Download IB gateway
    get_url: 
@@ -110,6 +94,9 @@
      state: restarted
      name: ibcontroller-paper
 
+ - name: Install psycopg2
+   command: /usr/local/anaconda/bin/conda install psycopg2
+
  - name: Create postgres user
    postgresql_user: name={{ dbuser }} password={{ dbpassword }}
    become: true
@@ -134,3 +121,42 @@
    become: true
    become_user: postgres
    postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
+
+ - name: Upload pgpass 
+   copy:
+     src: "{{ item }}"
+     dest: /home/ubuntu/.pgpass
+     mode: 0600
+     owner: ubuntu
+   with_items:
+     - "pgpass"
+
+ - name: Checkout repo
+   become_user: ubuntu
+   git:
+     repo: 'https://{{ githubuser | urlencode }}:{{ githubpassword | urlencode }}@bitbucket.org/rsteckel/conical.git'
+     dest: /home/ubuntu/Workspace/conical
+     clone: yes
+
+ - name: Download IB API
+   become_user: ubuntu
+   get_url:
+     url: "http://interactivebrokers.github.io/downloads/twsapi_macunix.973.07.zip"
+     dest: "/home/ubuntu/Workspace/IBAPI.zip"
+
+ - name: Set anaconda path
+   shell: echo "export PATH=/usr/local/anaconda/bin:$PATH" >> /home/ubuntu/.profile
+
+ - name: Set python path
+   shell: echo "export PYTHONPATH=/home/ubuntu/Workspace/conical/src:$PYTHONPATH" >> /home/ubuntu/.profile
+
+ - name: Unzip IB api
+   shell: cd /home/ubuntu/Workspace; unzip -o IBAPI.zip
+
+ - name: Install IB api
+   shell: cd /home/ubuntu/Workspace/IBJts/source/pythonclient/; /usr/local/anaconda/bin/python setup.py install
+
+ - name: Setup tables
+   shell: /usr/bin/psql boilkettle -f /home/ubuntu/Workspace/conical/conf/schema.sql
+   become: yes
+   become_user: ubuntu
